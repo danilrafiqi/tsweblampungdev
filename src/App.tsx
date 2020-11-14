@@ -1,25 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react';
+import PrivateRoute from './components/PrivateRoute';
+import Router from './config/router';
+import About from './containers/pages/about';
+import {Provider} from 'react-redux'
+import { persistor, store } from './config/redux/store';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <div className="App">
+          <BrowserRouter>
+            <Switch>
+              <Redirect
+              from="/about"
+              to={{
+                pathname:"/acak",
+                search:"?nama=danil",
+              }} />
+              {Router.map((route, i)=>{
+                return <Route key={i.toString()} component={route.component} path={route.path} exact />
+              })}
+              <PrivateRoute isLogin={true} component={About} path="/about-private" />
+              <Route
+                path="*"
+                component={() => {
+                  return <div>404</div>;
+                }}
+                />
+            </Switch>
+          </BrowserRouter>
+        </div>
+      </PersistGate>
+    </Provider>
   );
 }
 
